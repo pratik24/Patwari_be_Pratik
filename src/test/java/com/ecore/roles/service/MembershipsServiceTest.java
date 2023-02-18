@@ -1,5 +1,7 @@
 package com.ecore.roles.service;
 
+import com.ecore.roles.client.model.Team;
+import com.ecore.roles.client.model.User;
 import com.ecore.roles.exception.InvalidArgumentException;
 import com.ecore.roles.exception.ResourceExistsException;
 import com.ecore.roles.model.Membership;
@@ -16,6 +18,10 @@ import java.util.Optional;
 
 import static com.ecore.roles.utils.TestData.DEFAULT_MEMBERSHIP;
 import static com.ecore.roles.utils.TestData.DEVELOPER_ROLE;
+import static com.ecore.roles.utils.TestData.GIANNI_USER;
+import static com.ecore.roles.utils.TestData.GIANNI_USER_UUID;
+import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM;
+import static com.ecore.roles.utils.TestData.ORDINARY_CORAL_LYNX_TEAM_UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,6 +46,15 @@ class MembershipsServiceTest {
 
     @Test
     public void shouldCreateMembership() {
+        Team ordinaryCoralLynxTeam = ORDINARY_CORAL_LYNX_TEAM();
+        when(teamsService
+                .getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID))
+                        .thenReturn(ordinaryCoralLynxTeam);
+        
+        User gianniUser = GIANNI_USER();
+        when(usersService
+                .getUser(GIANNI_USER_UUID))
+                .thenReturn(gianniUser);
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
         when(roleRepository.findById(expectedMembership.getRole().getId()))
                 .thenReturn(Optional.ofNullable(DEVELOPER_ROLE()));
@@ -49,7 +64,6 @@ class MembershipsServiceTest {
         when(membershipRepository
                 .save(expectedMembership))
                         .thenReturn(expectedMembership);
-
         Membership actualMembership = membershipsService.assignRoleToMembership(expectedMembership);
 
         assertNotNull(actualMembership);
@@ -97,7 +111,7 @@ class MembershipsServiceTest {
     @Test
     public void shouldFailToGetMembershipsWhenRoleIdIsNull() {
         assertThrows(NullPointerException.class,
-                () -> membershipsService.getMemberships(null));
+                () -> membershipsService.getMembershipsByRoleId(null));
     }
 
 }

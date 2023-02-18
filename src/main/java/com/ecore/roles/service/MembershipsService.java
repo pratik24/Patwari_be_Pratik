@@ -10,5 +10,5 @@ public interface MembershipsService {
 
     Membership assignRoleToMembership(Membership membership) throws ResourceNotFoundException;
 
-    List<Membership> getMemberships(UUID roleId);
+    List<Membership> getMembershipsByRoleId(UUID roleId);
 }

@@ -30,18 +30,18 @@ public class MembershipsRestController implements MembershipsApi {
             @NotNull @Valid @RequestBody MembershipDto membershipDto) {
         Membership membership = membershipsService.assignRoleToMembership(membershipDto.toModel());
         return ResponseEntity
-                .status(200)
+                .status(201)
                 .body(fromModel(membership));
     }
 
     @Override
-    @PostMapping(
+    @GetMapping(
             path = "/search",
             produces = {"application/json"})
     public ResponseEntity<List<MembershipDto>> getMemberships(
             @RequestParam UUID roleId) {
 
-        List<Membership> memberships = membershipsService.getMemberships(roleId);
+        List<Membership> memberships = membershipsService.getMembershipsByRoleId(roleId);
 
         List<MembershipDto> newMembershipDto = new ArrayList<>();
 
