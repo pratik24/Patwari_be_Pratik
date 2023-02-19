@@ -4,11 +4,13 @@ import com.ecore.roles.model.Role;
 import com.ecore.roles.service.RolesService;
 import com.ecore.roles.web.RolesApi;
 import com.ecore.roles.web.dto.RoleDto;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -29,16 +31,16 @@ public class RolesRestController implements RolesApi {
     public ResponseEntity<RoleDto> createRole(
             @Valid @RequestBody RoleDto role) {
         return ResponseEntity
-                .status(200)
-                .body(fromModel(rolesService.CreateRole(role.toModel())));
+                .status(201)
+                .body(fromModel(rolesService.createRole(role.toModel())));
     }
 
     @Override
-    @PostMapping(
+    @GetMapping(
             produces = {"application/json"})
     public ResponseEntity<List<RoleDto>> getRoles() {
 
-        List<Role> getRoles = rolesService.GetRoles();
+        List<Role> getRoles = rolesService.getRoles();
 
         List<RoleDto> roleDtoList = new ArrayList<>();
 
@@ -53,14 +55,47 @@ public class RolesRestController implements RolesApi {
     }
 
     @Override
-    @PostMapping(
+    @GetMapping(
             path = "/{roleId}",
             produces = {"application/json"})
     public ResponseEntity<RoleDto> getRole(
             @PathVariable UUID roleId) {
         return ResponseEntity
                 .status(200)
-                .body(fromModel(rolesService.GetRole(roleId)));
+                .body(fromModel(rolesService.getRole(roleId)));
     }
 
+    @Override
+    @GetMapping(
+            path = "/search",
+            produces = {"application/json"})
+    public ResponseEntity<RoleDto> getRoleByUserIdAndTeamId(
+            @RequestParam UUID teamMemberId,
+            @RequestParam UUID teamId) {
+        return ResponseEntity
+                .status(200)
+                .body(fromModel(rolesService.getRoleByUserIdAndTeamId(teamMemberId, teamId)));
+    }
+
+    @Override
+    @GetMapping(
+            path = "/filter",
+            produces = {"application/json"})
+    public ResponseEntity<List<RoleDto>> getRolesByFilters(
+            @RequestParam(required = false) UUID teamMemberId,
+            @RequestParam(required = false) UUID teamId) {
+
+        List<Role> roles = rolesService.getRolesByFilters(teamMemberId, teamId);
+
+        List<RoleDto> roleDtos = new ArrayList<>();
+
+        for (Role role : roles) {
+            RoleDto roleDto = fromModel(role);
+            roleDtos.add(roleDto);
+        }
+
+        return ResponseEntity
+                .status(200)
+                .body(roleDtos);
+    }
 }

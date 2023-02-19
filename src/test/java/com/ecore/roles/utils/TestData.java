@@ -82,6 +82,19 @@ public class TestData {
         return GIANNI_USER(true);
     }
 
+    public static User UUID_4_USER(boolean full) {
+        User user = User.builder()
+                .id(UUID_4)
+                .displayName("johnWalker").build();
+        if (full) {
+            user.setFirstName("John");
+            user.setLastName("Walker");
+            user.setAvatarUrl("https://cdn.fakercloud.com/avatars/rude_128.jpg");
+            user.setLocation("Pune");
+        }
+        return user;
+    }
+
     public static Membership DEFAULT_MEMBERSHIP() {
         return Membership.builder()
                 .id(DEFAULT_MEMBERSHIP_UUID)

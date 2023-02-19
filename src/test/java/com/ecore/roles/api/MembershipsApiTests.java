@@ -14,6 +14,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 import static com.ecore.roles.utils.MockUtils.mockGetTeamById;
+import static com.ecore.roles.utils.MockUtils.mockGetUserById;
 import static com.ecore.roles.utils.RestAssuredHelper.createMembership;
 import static com.ecore.roles.utils.RestAssuredHelper.getMemberships;
 import static com.ecore.roles.utils.TestData.*;
@@ -126,7 +127,7 @@ public class MembershipsApiTests {
     void shouldFailToAssignRoleWhenMembershipIsInvalid() {
         Membership expectedMembership = INVALID_MEMBERSHIP();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
-
+        mockGetUserById(mockServer, UUID_4, UUID_4_USER(true));
         createMembership(expectedMembership)
                 .validate(400,
                         "Invalid 'Membership' object. The provided user doesn't belong to the provided team.");
@@ -164,7 +165,7 @@ public class MembershipsApiTests {
     private MembershipDto createDefaultMembership() {
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
         mockGetTeamById(mockServer, expectedMembership.getTeamId(), ORDINARY_CORAL_LYNX_TEAM());
-
+        mockGetUserById(mockServer, GIANNI_USER_UUID, GIANNI_USER());
         return createMembership(expectedMembership)
                 .statusCode(201)
                 .extract().as(MembershipDto.class);
