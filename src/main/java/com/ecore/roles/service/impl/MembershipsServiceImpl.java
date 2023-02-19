@@ -61,13 +61,15 @@ public class MembershipsServiceImpl implements MembershipsService {
         if (team == null) {
             throw new ResourceNotFoundException(Team.class, membership.getTeamId());
         }
-        if(!isUserInTeam(membership.getUserId(), team)){
-            throw new InvalidArgumentException(Membership.class, "The provided user doesn't belong to the provided team.");
-        }
         User user = usersService.getUser(membership.getUserId());
         if (user == null) {
             throw new ResourceNotFoundException(User.class, membership.getUserId());
         }
+
+        if(!isUserInTeam(membership.getUserId(), team)){
+            throw new InvalidArgumentException(Membership.class, "The provided user doesn't belong to the provided team.");
+        }
+        
         return membershipRepository.save(membership);
     }
 
