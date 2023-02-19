@@ -50,11 +50,11 @@ class MembershipsServiceTest {
         when(teamsService
                 .getTeam(ORDINARY_CORAL_LYNX_TEAM_UUID))
                         .thenReturn(ordinaryCoralLynxTeam);
-        
+
         User gianniUser = GIANNI_USER();
         when(usersService
                 .getUser(GIANNI_USER_UUID))
-                .thenReturn(gianniUser);
+                        .thenReturn(gianniUser);
         Membership expectedMembership = DEFAULT_MEMBERSHIP();
         when(roleRepository.findById(expectedMembership.getRole().getId()))
                 .thenReturn(Optional.ofNullable(DEVELOPER_ROLE()));

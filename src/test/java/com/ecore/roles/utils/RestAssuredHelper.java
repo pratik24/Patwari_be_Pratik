@@ -12,6 +12,7 @@ import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.hamcrest.Matchers;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -58,6 +59,14 @@ public class RestAssuredHelper {
                 .queryParam("teamId", teamId)
                 .when()
                 .get("/v1/roles/search")
+                .then());
+    }
+
+    public static EcoreValidatableResponse getRolesByFilters(Map<String, UUID> params) {
+        return sendRequest(given()
+                .queryParams(params)
+                .when()
+                .get("/v1/roles/filter")
                 .then());
     }
 

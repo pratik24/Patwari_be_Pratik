@@ -82,10 +82,10 @@ public class TestData {
         return GIANNI_USER(true);
     }
 
-    public static User UUID_4_USER(boolean full){
+    public static User UUID_4_USER(boolean full) {
         User user = User.builder()
-        .id(UUID_4)
-        .displayName("johnWalker").build();
+                .id(UUID_4)
+                .displayName("johnWalker").build();
         if (full) {
             user.setFirstName("John");
             user.setLastName("Walker");

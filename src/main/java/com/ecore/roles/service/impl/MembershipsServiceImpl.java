@@ -56,7 +56,7 @@ public class MembershipsServiceImpl implements MembershipsService {
         }
 
         roleRepository.findById(roleId).orElseThrow(() -> new ResourceNotFoundException(Role.class, roleId));
-        
+
         Team team = teamsService.getTeam(membership.getTeamId());
         if (team == null) {
             throw new ResourceNotFoundException(Team.class, membership.getTeamId());
@@ -66,10 +66,11 @@ public class MembershipsServiceImpl implements MembershipsService {
             throw new ResourceNotFoundException(User.class, membership.getUserId());
         }
 
-        if(!isUserInTeam(membership.getUserId(), team)){
-            throw new InvalidArgumentException(Membership.class, "The provided user doesn't belong to the provided team.");
+        if (!isUserInTeam(membership.getUserId(), team)) {
+            throw new InvalidArgumentException(Membership.class,
+                    "The provided user doesn't belong to the provided team.");
         }
-        
+
         return membershipRepository.save(membership);
     }
 
@@ -79,10 +80,10 @@ public class MembershipsServiceImpl implements MembershipsService {
     }
 
     private boolean isUserInTeam(UUID userId, Team team) {
-        if(userId.equals(team.getTeamLeadId())){
+        if (userId.equals(team.getTeamLeadId())) {
             return true;
         }
-        if(team.getTeamMemberIds() == null || team.getTeamMemberIds().size() == 0){
+        if (team.getTeamMemberIds() == null || team.getTeamMemberIds().size() == 0) {
             return false;
         }
         return team.getTeamMemberIds().contains(userId);

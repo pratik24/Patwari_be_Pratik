@@ -18,7 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 
 @Log4j2
 @Service
@@ -67,18 +72,55 @@ public class RolesServiceImpl implements RolesService {
             @NonNull UUID userId,
             @NonNull UUID teamId) {
 
-        Team team = teamsService.getTeam(teamId);
-        if (team == null) {
-            throw new ResourceNotFoundException(Team.class, teamId);
-        }
-        User user = usersService.getUser(userId);
-        if (user == null) {
-            throw new ResourceNotFoundException(User.class, userId);
-        }
+        Optional.of(teamId)
+                .map(teamsService::getTeam)
+                .orElseThrow(() -> new ResourceNotFoundException(Team.class, teamId));
+        Optional.of(userId)
+                .map(usersService::getUser)
+                .orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+
         Membership membership = membershipRepository.findByUserIdAndTeamId(userId, teamId)
                 .orElseThrow(() -> new ResourceNotFoundException(Membership.class,
                         String.format("userId:%s teamId:%s", userId, teamId)));
 
         return membership.getRole();
+    }
+
+    @Override
+    public List<Role> getRolesByFilters(
+            UUID userId,
+            UUID teamId) {
+        if (userId == null && teamId == null) {
+            return getRoles();
+        }
+        if (userId != null && teamId != null) {
+            Role role = getRoleByUserIdAndTeamId(userId, teamId);
+            return List.of(role);
+        }
+
+        List<Membership> memberships = Collections.emptyList();
+
+        if (userId != null) {
+            Optional.of(userId)
+                    .map(usersService::getUser)
+                    .orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+            memberships = membershipRepository.findByUserId(userId);
+        } else {
+            Optional.of(teamId)
+                    .map(teamsService::getTeam)
+                    .orElseThrow(() -> new ResourceNotFoundException(Team.class, teamId));
+            memberships = membershipRepository.findByTeamId(teamId);
+        }
+
+        Set<UUID> rolesIds = new HashSet<>();
+        List<Role> roles = new ArrayList<>();
+        for (Membership membership : memberships) {
+            if (rolesIds.contains(membership.getRole().getId())) {
+                continue;
+            }
+            rolesIds.add(membership.getRole().getId());
+            roles.add(membership.getRole());
+        }
+        return roles;
     }
 }
